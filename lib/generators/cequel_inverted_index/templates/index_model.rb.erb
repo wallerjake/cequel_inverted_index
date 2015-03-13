@@ -1,0 +1,9 @@
+# This file was automatically generated with Cequel Inverted Index Generator
+class <%=@index_model_name%>
+  include Cequel::Record
+  key :id, :text
+  set :target_ids, :uuid
+
+  include InvertedIndex
+
+end

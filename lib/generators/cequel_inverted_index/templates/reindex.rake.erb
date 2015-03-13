@@ -1,0 +1,8 @@
+# This file was automatically generated with Cequel Inverted Index Generator
+namespace :cequel do
+  task :reindex_<%=@model_name%>_<%=@column_name%>_index => :environment do
+    <%=@model_class_name%>.each do |record|
+      <%=@index_model_name%>.add_to_index(key: record.<%=@column_name%>, target_id: record.id)
+    end
+  end
+end

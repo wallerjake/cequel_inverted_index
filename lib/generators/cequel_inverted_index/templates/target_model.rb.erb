@@ -1,0 +1,49 @@
+# This file was automatically generated with Cequel Inverted Index Generator
+module <%=@column_name.camelize%>Search
+  extend ActiveSupport::Concern
+
+  included do
+    after_save :update_<%=@column_name%>_index
+    after_create :add_to_<%=@column_name%>_index
+    before_destroy :remove_from_<%=@column_name%>_index
+  end
+
+  module ClassMethods
+    def find_all_by_<%=@column_name%>(query)
+      ids = <%=@index_model_name%>.find_target_ids(query).to_a
+      return [] if ids.empty?
+      <%=@model_class_name%>.where(id: ids)
+    end
+
+    def any_with_<%=@column_name%>?(query)
+      count_with_<%=@column_name%>(query) > 0
+    end
+
+    def count_with_<%=@column_name%>(query)
+      ids = <%=@index_model_name%>.find_target_ids(query).to_a
+      return ids.length
+    end
+  end
+
+private
+
+  def remove_from_<%=@column_name%>_index
+    <%=@index_model_name%>.remove_from_index(key: self.<%=@column_name%>, target_id: self.id)
+  end
+
+  def add_to_<%=@column_name%>_index
+    <%=@index_model_name%>.add_to_index(key: self.<%=@column_name%>, target_id: self.id)
+  end
+
+  def update_<%=@column_name%>_index
+    if self.changed?
+      if self.changed_attributes.has_key?('<%=@column_name%>')
+        old_val = self.changed_attributes['<%=@column_name%>']
+        if old_val
+          <%=@index_model_name%>.remove_from_index(key: old_val, target_id: self.id)
+        end
+        <%=@index_model_name%>.add_to_index(key: self.<%=@column_name%>, target_id: self.id)
+      end
+    end
+  end
+end
