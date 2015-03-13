@@ -1,0 +1,32 @@
+Description:
+    Creates the support files needed to provide an inverted index for
+    cassandra databases using the Cequel gem.
+
+Example:
+    rails generate cequel_inverted_index MyAwesomeModel column_to_search_by
+
+    This will create:
+        - app\models\#{model}_#{column}_index.rb
+          (A new Cequel model that implements the inverted index)
+        - app\models\concerns\inverted_index.rb
+          (A mixin for the above index model)
+        - app\models\concerns\#{column}_search.rb
+          (A mixin for the primary model to extend it's functionality)
+
+    This will modify:
+        - your primary model to include the above concern.
+
+    The following methods will be available to your primary model class:
+        - find_all_by_#{column}(value)
+          (Returns all records with given value in indexed column)
+        - count_with_#{column}(value)
+          (Returns number of records with given value in indexed column)
+        - any_with_#{column}?(value)
+          (Returns true if any records have given value in the indexed column)
+
+Notes:
+    You will need to migrate your database after running the generator:
+      `rake cequel:migrate`
+
+    If you already have records in your database, your new index will not know
+    about them.  You will need to re-index.
